@@ -3,44 +3,49 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banner Replacement Studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vision AI - Banner Replacement Studio</title>
 
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
-    background: #0d1220;
-    color: #fff;
     font-family: Arial, sans-serif;
+    background: #0b1020;
+    color: #fff;
 }
 
 header {
-    padding: 24px 15px;
+    padding: 25px 15px;
     text-align: center;
-    background: #171f32;
-    border-bottom: 1px solid #303b52;
+    background: #151f35;
+    border-bottom: 1px solid #293753;
 }
 
 header h1 {
-    margin: 0;
-    color: #8db7ff;
+    color: #8dbaff;
+    margin: 0 0 8px;
 }
 
-header p { color: #aebbd0; }
+header p {
+    color: #aab8d0;
+    margin: 0;
+}
 
 .container {
-    max-width: 1050px;
+    max-width: 1100px;
     padding: 20px;
     margin: auto;
 }
 
 .panel {
-    background: #192338;
-    border: 1px solid #2d3a53;
-    border-radius: 12px;
+    background: #172238;
+    border: 1px solid #2b3b58;
     padding: 20px;
+    border-radius: 12px;
     margin-bottom: 18px;
 }
 
@@ -49,59 +54,78 @@ h2 {
     margin-top: 0;
 }
 
-input[type="file"] {
+.help {
+    color: #aab8d0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+input[type=file] {
     display: block;
-    margin-top: 12px;
+    margin: 12px 0;
     max-width: 100%;
 }
 
-input[type="number"] {
+input[type=number] {
     width: 95px;
-    padding: 9px;
-    border: 1px solid #42516d;
-    border-radius: 6px;
-    background: #101a2c;
+    background: #0d172a;
     color: white;
+    border: 1px solid #465875;
+    border-radius: 6px;
+    padding: 9px;
+}
+
+input[type=range] {
+    width: 100%;
+    accent-color: #5896ff;
 }
 
 button {
-    border: 0;
-    padding: 11px 15px;
-    margin: 5px 3px 5px 0;
-    border-radius: 7px;
     background: #3978e8;
     color: white;
+    border: none;
+    padding: 11px 16px;
+    border-radius: 7px;
+    margin: 5px 3px 5px 0;
     cursor: pointer;
     font-weight: bold;
 }
 
-button:hover { background: #2862c8; }
+button:hover {
+    background: #245fc4;
+}
 
 button:disabled {
     opacity: .45;
     cursor: not-allowed;
 }
 
-small, .help {
-    color: #aebbd0;
-    line-height: 1.6;
-}
-
 .controls {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 9px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.control {
+    margin: 16px 0;
+}
+
+.control label {
+    display: flex;
+    justify-content: space-between;
+    color: #d3dff2;
+    margin-bottom: 8px;
 }
 
 #stage {
     position: relative;
     width: 100%;
-    background: #000;
+    background: black;
     overflow: hidden;
-    border-radius: 8px;
-    cursor: crosshair;
+    border-radius: 9px;
     touch-action: none;
+    cursor: crosshair;
 }
 
 #video {
@@ -111,10 +135,10 @@ small, .help {
 }
 
 #selection {
+    display: none;
     position: absolute;
     border: 2px dashed #00e5ff;
-    background: rgba(0,229,255,.13);
-    display: none;
+    background: rgba(0,229,255,.12);
     pointer-events: none;
 }
 
@@ -126,156 +150,233 @@ small, .help {
 }
 
 #status {
-    color: #8ce6a4;
-    margin-top: 12px;
+    color: #86e6a5;
+    line-height: 1.5;
     overflow-wrap: anywhere;
 }
 
 #downloadLink {
     display: none;
-    color: #8db7ff;
+    color: #8dbaff;
     font-weight: bold;
     margin-top: 15px;
 }
 
+.value {
+    color: #8dbaff;
+}
+
 footer {
     text-align: center;
-    padding: 20px;
     color: #8290a8;
+    padding: 25px;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-    <h1>Banner Replacement Studio</h1>
-    <p>Upload • Select • Replace • Export</p>
+    <h1>Vision AI Studio</h1>
+    <p>Replace banners • Match lighting • Protect moving foreground objects</p>
 </header>
 
 <main class="container">
 
-    <section class="panel">
-        <h2>1. Upload your video</h2>
-        <input type="file" id="videoInput" accept="video/*">
-        <p class="help">Your video stays in your browser. It is not uploaded to a server.</p>
-    </section>
+<section class="panel">
+    <h2>1. Upload original video</h2>
+    <input type="file" id="videoInput" accept="video/*">
+    <p class="help">
+        Your video is processed locally in your browser.
+        It is not uploaded to your Vercel website.
+    </p>
+</section>
 
-    <section class="panel">
-        <h2>2. Upload your replacement banner</h2>
-        <input type="file" id="bannerInput" accept="image/*">
-        <p class="help">Select the image you want to place over the original signboard.</p>
-    </section>
+<section class="panel">
+    <h2>2. Upload replacement banner</h2>
+    <input type="file" id="bannerInput" accept="image/*">
+    <p class="help">
+        Select the banner image that you want to place over the original signboard.
+    </p>
+</section>
 
-    <section class="panel">
-        <h2>3. Trim your video</h2>
-        <div class="controls">
-            <label>Start (seconds)
-                <input type="number" id="startTime" min="0" value="0" step="0.1">
-            </label>
+<section class="panel">
+    <h2>3. Trim video</h2>
 
-            <label>End (seconds)
-                <input type="number" id="endTime" min="0" value="0" step="0.1">
-            </label>
+    <div class="controls">
+        <label>Start (seconds)
+            <input id="startTime" type="number" value="0" min="0" step=".1">
+        </label>
 
-            <button id="setStart">Set start to current time</button>
-            <button id="setEnd">Set end to current time</button>
-        </div>
-    </section>
+        <label>End (seconds)
+            <input id="endTime" type="number" value="0" min="0" step=".1">
+        </label>
 
-    <section class="panel">
-        <h2>4. Select the original banner</h2>
-        <p class="help">
-            Pause the video. Drag your mouse over the existing banner
-            to draw a rectangle around it.
-        </p>
+        <button id="setStart">Set start here</button>
+        <button id="setEnd">Set end here</button>
+    </div>
+</section>
 
-        <div id="stage">
-            <video id="video" controls playsinline></video>
-            <div id="selection"></div>
-            <img id="previewBanner" alt="Replacement banner preview">
-        </div>
+<section class="panel">
+    <h2>4. Select original signboard</h2>
 
-        <div class="controls">
-            <button id="clearSelection">Clear selection</button>
-            <button id="showBanner">Show replacement</button>
-            <button id="hideBanner">Hide replacement</button>
-        </div>
+    <p class="help">
+        Pause the video. Drag your mouse or finger over the original banner
+        to draw a rectangular selection.
+    </p>
 
-        <p class="help">
-            The replacement image is fitted inside the selected rectangle
-            without changing its aspect ratio.
-        </p>
-    </section>
+    <div id="stage">
+        <video id="video" controls playsinline></video>
+        <div id="selection"></div>
+        <img id="previewBanner" alt="Banner preview">
+    </div>
 
-    <section class="panel">
-        <h2>5. Export your edited video</h2>
-        <button id="exportButton" disabled>Export video</button>
-        <button id="cancelButton" disabled>Cancel export</button>
+    <div class="controls">
+        <button id="clearSelection">Clear selection</button>
+        <button id="showPreview">Show replacement</button>
+        <button id="hidePreview">Hide replacement</button>
+    </div>
+</section>
 
-        <p id="status">Upload a video to begin.</p>
-        <a id="downloadLink" download="edited-video.webm">
-            Download edited video
-        </a>
+<section class="panel">
+    <h2>5. Banner appearance</h2>
 
-        <p class="help">
-            Export uses WebM where supported by your browser.
-            Original audio is included where the browser supports video
-            audio capture. Keep this tab open while exporting.
-        </p>
-    </section>
+    <div class="control">
+        <label>Brightness <span id="brightnessValue" class="value">100%</span></label>
+        <input id="brightness" type="range" min="40" max="160" value="100">
+    </div>
+
+    <div class="control">
+        <label>Saturation <span id="saturationValue" class="value">100%</span></label>
+        <input id="saturation" type="range" min="0" max="180" value="100">
+    </div>
+
+    <div class="control">
+        <label>Contrast <span id="contrastValue" class="value">100%</span></label>
+        <input id="contrast" type="range" min="50" max="160" value="100">
+    </div>
+
+    <div class="control">
+        <label>Banner opacity <span id="opacityValue" class="value">100%</span></label>
+        <input id="opacity" type="range" min="20" max="100" value="100">
+    </div>
+
+    <div class="control">
+        <label>Edge softness <span id="softnessValue" class="value">2 px</span></label>
+        <input id="softness" type="range" min="0" max="12" value="2">
+    </div>
+
+    <div class="control">
+        <label>Motion detection sensitivity <span id="sensitivityValue" class="value">25</span></label>
+        <input id="sensitivity" type="range" min="5" max="80" value="25">
+    </div>
+
+    <div class="control">
+        <label>Foreground mask expansion <span id="expansionValue" class="value">5 px</span></label>
+        <input id="expansion" type="range" min="0" max="15" value="5">
+    </div>
+
+    <p class="help">
+        Brightness, saturation, contrast and opacity are adjustable.
+        Motion sensitivity controls how much frame-to-frame change is
+        treated as a moving foreground object.
+    </p>
+</section>
+
+<section class="panel">
+    <h2>6. Export edited video</h2>
+
+    <button id="exportButton" disabled>Export video</button>
+    <button id="cancelButton" disabled>Cancel export</button>
+
+    <p id="status">Upload your video to begin.</p>
+
+    <a id="downloadLink" download="edited-video.webm">
+        Download edited video
+    </a>
+
+    <p class="help">
+        Export format: WebM. Original audio is included when supported
+        by your browser. Keep this page open until exporting finishes.
+    </p>
+</section>
 
 </main>
 
 <footer>
-    Banner Replacement Studio · Browser-based editing
+    Vision AI Studio · Browser-only video editor
 </footer>
 
 <script>
-const videoInput = document.getElementById("videoInput");
-const bannerInput = document.getElementById("bannerInput");
-const video = document.getElementById("video");
-const stage = document.getElementById("stage");
-const selection = document.getElementById("selection");
-const previewBanner = document.getElementById("previewBanner");
-const startInput = document.getElementById("startTime");
-const endInput = document.getElementById("endTime");
-const exportButton = document.getElementById("exportButton");
-const cancelButton = document.getElementById("cancelButton");
-const statusText = document.getElementById("status");
-const downloadLink = document.getElementById("downloadLink");
+const $ = id => document.getElementById(id);
+
+const video = $("video");
+const stage = $("stage");
+const selection = $("selection");
+const previewBanner = $("previewBanner");
 
 let videoURL = null;
 let bannerURL = null;
+let downloadURL = null;
 let bannerImage = null;
 let selectionRect = null;
-let dragging = false;
 let dragStart = null;
+let dragging = false;
+let previousFrame = null;
 let recorder = null;
-let chunks = [];
-let animationId = null;
-let exportCancelled = false;
-let exportStream = null;
-let audioContext = null;
-let sourceNode = null;
-let audioDestination = null;
-let outputURL = null;
+let outputChunks = [];
+let outputStream = null;
+let animationFrame = null;
+let cancelled = false;
 
-function setStatus(message) {
-    statusText.textContent = message;
+const videoCanvas = document.createElement("canvas");
+const videoContext = videoCanvas.getContext("2d", {
+    willReadFrequently: true
+});
+
+const previousCanvas = document.createElement("canvas");
+const previousContext = previousCanvas.getContext("2d", {
+    willReadFrequently: true
+});
+
+const maskCanvas = document.createElement("canvas");
+const maskContext = maskCanvas.getContext("2d");
+
+const foregroundCanvas = document.createElement("canvas");
+const foregroundContext = foregroundCanvas.getContext("2d");
+
+const lowWidth = 360;
+const lowHeight = 203;
+
+previousCanvas.width = lowWidth;
+previousCanvas.height = lowHeight;
+maskCanvas.width = lowWidth;
+maskCanvas.height = lowHeight;
+foregroundCanvas.width = lowWidth;
+foregroundCanvas.height = lowHeight;
+
+let previousPixels = null;
+let motionMask = null;
+let previousTime = -1;
+let maskReady = false;
+
+function status(message) {
+    $("status").textContent = message;
 }
 
-function revokeURL(url) {
+function revoke(url) {
     if (url) URL.revokeObjectURL(url);
 }
 
-videoInput.addEventListener("change", () => {
-    const file = videoInput.files[0];
+$("videoInput").addEventListener("change", () => {
+    const file = $("videoInput").files[0];
     if (!file) return;
 
     stopExport();
-    revokeURL(videoURL);
-    revokeURL(outputURL);
+
+    revoke(videoURL);
+    revoke(downloadURL);
 
     videoURL = URL.createObjectURL(file);
     video.src = videoURL;
@@ -284,49 +385,50 @@ videoInput.addEventListener("change", () => {
     selectionRect = null;
     selection.style.display = "none";
     previewBanner.style.display = "none";
-    downloadLink.style.display = "none";
+    $("downloadLink").style.display = "none";
 
-    setStatus("Video loaded. Pause and select the banner area.");
+    resetMotion();
+
+    status("Video loaded. Pause and select the signboard.");
 });
 
 video.addEventListener("loadedmetadata", () => {
-    startInput.value = 0;
-    endInput.value = video.duration.toFixed(1);
-    exportButton.disabled = false;
+    $("startTime").value = 0;
+    $("endTime").value = video.duration.toFixed(1);
+    $("exportButton").disabled = false;
 });
 
-bannerInput.addEventListener("change", () => {
-    const file = bannerInput.files[0];
+$("bannerInput").addEventListener("change", () => {
+    const file = $("bannerInput").files[0];
     if (!file) return;
 
-    revokeURL(bannerURL);
+    revoke(bannerURL);
     bannerURL = URL.createObjectURL(file);
 
-    const image = new Image();
+    const img = new Image();
 
-    image.onload = () => {
-        bannerImage = image;
+    img.onload = () => {
+        bannerImage = img;
         previewBanner.src = bannerURL;
-        previewBanner.style.display = "none";
-        setStatus("Banner loaded. Select a rectangle on the video.");
+        status("Replacement banner loaded.");
     };
 
-    image.onerror = () => {
-        setStatus("Could not load this banner image.");
+    img.onerror = () => {
+        status("Could not load banner image.");
     };
 
-    image.src = bannerURL;
+    img.src = bannerURL;
 });
 
-document.getElementById("setStart").addEventListener("click", () => {
-    startInput.value = video.currentTime.toFixed(1);
-});
+$("setStart").onclick = () => {
+    $("startTime").value = video.currentTime.toFixed(1);
+};
 
-document.getElementById("setEnd").addEventListener("click", () => {
-    endInput.value = video.currentTime.toFixed(1);
-});
+$("setEnd").onclick = () => {
+    $("endTime").value = video.currentTime.toFixed(1);
+};
 
-function pointerPosition(event) {
+function getPoint(event) {
     const rect = stage.getBoundingClientRect();
 
     return {
@@ -336,17 +438,13 @@ function pointerPosition(event) {
 }
 
 stage.addEventListener("pointerdown", event => {
-    if (!video.src || video.paused === false) {
-        setStatus("Pause the video before selecting the banner.");
+    if (!video.src || !video.paused) {
+        status("Pause the video before selecting the signboard.");
         return;
     }
 
-    if (event.target.closest("video") === null &&
-        event.target !== selection &&
-        event.target !== previewBanner) return;
-
     dragging = true;
-    dragStart = pointerPosition(event);
+    dragStart = getPoint(event);
 
     selectionRect = {
         x: dragStart.x,
@@ -362,13 +460,13 @@ stage.addEventListener("pointerdown", event => {
 stage.addEventListener("pointermove", event => {
     if (!dragging) return;
 
-    const point = pointerPosition(event);
+    const p = getPoint(event);
 
     selectionRect = {
-        x: Math.min(dragStart.x, point.x),
-        y: Math.min(dragStart.y, point.y),
-        width: Math.abs(point.x - dragStart.x),
-        height: Math.abs(point.y - dragStart.y)
+        x: Math.min(dragStart.x, p.x),
+        y: Math.min(dragStart.y, p.y),
+        width: Math.abs(p.x - dragStart.x),
+        height: Math.abs(p.y - dragStart.y)
     };
 
     updateSelection();
@@ -381,14 +479,15 @@ function finishSelection() {
     if (!selectionRect ||
         selectionRect.width < 5 ||
         selectionRect.height < 5) {
+
         selectionRect = null;
         selection.style.display = "none";
-        setStatus("Selection too small. Draw a larger rectangle.");
+        status("Draw a larger selection.");
         return;
     }
 
     updateSelection();
-    setStatus("Banner area selected.");
+    status("Signboard area selected.");
 }
 
 stage.addEventListener("pointerup", finishSelection);
@@ -403,233 +502,480 @@ function updateSelection() {
     selection.style.width = selectionRect.width + "px";
     selection.style.height = selectionRect.height + "px";
 
-    updateBannerPreview();
-}
-
-function updateBannerPreview() {
-    if (!selectionRect) return;
-
     previewBanner.style.left = selectionRect.x + "px";
     previewBanner.style.top = selectionRect.y + "px";
     previewBanner.style.width = selectionRect.width + "px";
     previewBanner.style.height = selectionRect.height + "px";
 }
 
-document.getElementById("clearSelection").addEventListener("click", () => {
+$("clearSelection").onclick = () => {
     selectionRect = null;
     selection.style.display = "none";
     previewBanner.style.display = "none";
-    setStatus("Selection cleared.");
-});
+    resetMotion();
+    status("Selection cleared.");
+};
 
-document.getElementById("showBanner").addEventListener("click", () => {
+$("showPreview").onclick = () => {
     if (!bannerImage || !selectionRect) {
-        setStatus("Upload a banner and select a rectangle first.");
+        status("Upload a banner and select the signboard first.");
         return;
     }
 
-    updateBannerPreview();
+    updateSelection();
     previewBanner.style.display = "block";
-});
+};
 
-document.getElementById("hideBanner").addEventListener("click", () => {
+$("hidePreview").onclick = () => {
     previewBanner.style.display = "none";
+};
+
+const sliders = [
+    ["brightness", "brightnessValue", "%"],
+    ["saturation", "saturationValue", "%"],
+    ["contrast", "contrastValue", "%"],
+    ["opacity", "opacityValue", "%"],
+    ["softness", "softnessValue", " px"],
+    ["sensitivity", "sensitivityValue", ""],
+    ["expansion", "expansionValue", " px"]
+];
+
+sliders.forEach(([input, output, suffix]) => {
+    $(input).addEventListener("input", () => {
+        $(output).textContent = $(input).value + suffix;
+    });
 });
 
-function drawContainedImage(ctx, image, x, y, width, height) {
-    const scale = Math.min(
-        width / image.naturalWidth,
-        height / image.naturalHeight
-    );
-
-    const drawWidth = image.naturalWidth * scale;
-    const drawHeight = image.naturalHeight * scale;
-
-    const drawX = x + (width - drawWidth) / 2;
-    const drawY = y + (height - drawHeight) / 2;
-
-    ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+function resetMotion() {
+    previousPixels = null;
+    motionMask = null;
+    previousTime = -1;
+    maskReady = false;
 }
 
-function drawFrame(ctx, canvas) {
-    const width = video.videoWidth;
-    const height = video.videoHeight;
+function fitImage(ctx, image, x, y, w, h) {
+    const scale = Math.min(
+        w / image.naturalWidth,
+        h / image.naturalHeight
+    );
 
-    ctx.clearRect(0, 0, width, height);
-    ctx.drawImage(video, 0, 0, width, height);
+    const dw = image.naturalWidth * scale;
+    const dh = image.naturalHeight * scale;
+
+    const dx = x + (w - dw) / 2;
+    const dy = y + (h - dh) / 2;
+
+    ctx.drawImage(image, dx, dy, dw, dh);
+}
+
+function getSelectionOnVideo() {
+    const rect = selectionRect;
+
+    const sx = video.videoWidth / stage.clientWidth;
+    const sy = video.videoHeight / stage.clientHeight;
+
+    return {
+        x: rect.x * sx,
+        y: rect.y * sy,
+        width: rect.width * sx,
+        height: rect.height * sy
+    };
+}
+
+/*
+ Motion detector:
+ Compares consecutive low-resolution frames.
+ Changes are treated as possible moving foreground objects.
+ This is an approximate motion mask, not semantic object segmentation.
+*/
+
+function detectMotion() {
+    const w = lowWidth;
+    const h = lowHeight;
+
+    const small = document.createElement("canvas");
+    small.width = w;
+    small.height = h;
+
+    const smallCtx = small.getContext("2d", {
+        willReadFrequently: true
+    });
+
+    smallCtx.drawImage(video, 0, 0, w, h);
+
+    const current = smallCtx.getImageData(0, 0, w, h);
+    const pixels = current.data;
+
+    if (!previousPixels) {
+        previousPixels = new Uint8ClampedArray(pixels);
+        previousContext.putImageData(current, 0, 0);
+        return;
+    }
+
+    const output = maskContext.createImageData(w, h);
+    const sensitivity = Number($("sensitivity").value);
+    const selected = getSelectionOnVideo();
+
+    const sx = selected.x / video.videoWidth * w;
+    const sy = selected.y / video.videoHeight * h;
+    const sw = selected.width / video.videoWidth * w;
+    const sh = selected.height / video.videoHeight * h;
+
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            const i = (y * w + x) * 4;
+
+            const inside =
+                x >= sx && x <= sx + sw &&
+                y >= sy && y <= sy + sh;
+
+            if (!inside) continue;
+
+            const currentGray =
+                (pixels[i] * .299) +
+                (pixels[i + 1] * .587) +
+                (pixels[i + 2] * .114);
+
+            const oldGray =
+                (previousPixels[i] * .299) +
+                (previousPixels[i + 1] * .587) +
+                (previousPixels[i + 2] * .114);
+
+            const difference = Math.abs(currentGray - oldGray);
+
+            if (difference > sensitivity) {
+                output.data[i] = 255;
+                output.data[i + 1] = 255;
+                output.data[i + 2] = 255;
+                output.data[i + 3] = 255;
+            }
+        }
+    }
+
+    maskContext.putImageData(output, 0, 0);
+
+    previousPixels = new Uint8ClampedArray(pixels);
+    maskReady = true;
+}
+
+function prepareForegroundMask() {
+    if (!maskReady) return;
+
+    const expansion = Number($("expansion").value);
+    const blur = expansion + 1;
+
+    maskContext.filter = "blur(" + blur + "px)";
+
+    const temporary = document.createElement("canvas");
+    temporary.width = lowWidth;
+    temporary.height = lowHeight;
+
+    const temporaryContext = temporary.getContext("2d");
+    temporaryContext.drawImage(maskCanvas, 0, 0);
+
+    maskContext.clearRect(0, 0, lowWidth, lowHeight);
+    maskContext.drawImage(temporary, 0, 0);
+    maskContext.filter = "none";
+
+    const mask = maskContext.getImageData(
+        0, 0, lowWidth, lowHeight
+    );
+
+    for (let i = 3; i < mask.data.length; i += 4) {
+        mask.data[i] = mask.data[i] > 25 ? 255 : 0;
+    }
+
+    maskContext.putImageData(mask, 0, 0);
+}
+
+function averageBrightness(ctx, x, y, w, h) {
+    const W = videoCanvas.width;
+    const H = videoCanvas.height;
+
+    const samples = [
+        [Math.max(0, x - 15), Math.max(0, y), 15, h],
+        [Math.min(W - 15, x + w), Math.max(0, y), 15, h],
+        [Math.max(0, x), Math.max(0, y - 15), w, 15],
+        [Math.max(0, x), Math.min(H - 15, y + h), w, 15]
+    ];
+
+    let total = 0;
+    let count = 0;
+
+    for (const [px, py, pw, ph] of samples) {
+        if (pw <= 0 || ph <= 0) continue;
+
+        try {
+            const data = ctx.getImageData(
+                Math.floor(px),
+                Math.floor(py),
+                Math.max(1, Math.floor(pw)),
+                Math.max(1, Math.floor(ph))
+            ).data;
+
+            for (let i = 0; i < data.length; i += 16) {
+                total +=
+                    data[i] * .299 +
+                    data[i + 1] * .587 +
+                    data[i + 2] * .114;
+
+                count++;
+            }
+        } catch (e) {
+            return 1;
+        }
+    }
+
+    return count ? total / count : 128;
+}
+
+function drawEditedFrame(ctx) {
+    const W = videoCanvas.width;
+    const H = videoCanvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(video, 0, 0, W, H);
 
     if (!bannerImage || !selectionRect) return;
 
-    const stageWidth = stage.clientWidth;
-    const stageHeight = stage.clientHeight;
+    const rect = getSelectionOnVideo();
 
-    if (!stageWidth || !stageHeight) return;
+    detectMotion();
+    prepareForegroundMask();
 
-    const scaleX = width / stageWidth;
-    const scaleY = height / stageHeight;
+    const brightness = Number($("brightness").value) / 100;
+    const saturation = Number($("saturation").value);
+    const contrast = Number($("contrast").value);
+    const opacity = Number($("opacity").value) / 100;
+    const softness = Number($("softness").value);
 
-    const x = selectionRect.x * scaleX;
-    const y = selectionRect.y * scaleY;
-    const w = selectionRect.width * scaleX;
-    const h = selectionRect.height * scaleY;
+    const surroundingBrightness = averageBrightness(
+        ctx,
+        rect.x, rect.y, rect.width, rect.height
+    );
 
-    drawContainedImage(ctx, bannerImage, x, y, w, h);
+    const originalImageBrightness = 128;
+    const automaticBrightness = Math.max(
+        .65,
+        Math.min(1.35, surroundingBrightness / originalImageBrightness)
+    );
+
+    const finalBrightness = automaticBrightness * brightness;
+
+    ctx.save();
+
+    ctx.beginPath();
+    ctx.rect(rect.x, rect.y, rect.width, rect.height);
+    ctx.clip();
+
+    ctx.globalAlpha = opacity;
+
+    ctx.filter =
+        "brightness(" + finalBrightness + ") " +
+        "saturate(" + saturation + "%) " +
+        "contrast(" + contrast + "%)";
+
+    if (softness > 0) {
+        ctx.filter += " blur(" + Math.min(softness, 3) + "px)";
+    }
+
+    fitImage(
+        ctx,
+        bannerImage,
+        rect.x,
+        rect.y,
+        rect.width,
+        rect.height
+    );
+
+    ctx.restore();
+    ctx.filter = "none";
+    ctx.globalAlpha = 1;
+
+    /*
+      Restore moving foreground pixels from original video.
+      The mask is generated from frame-to-frame pixel differences.
+    */
+
+    if (maskReady) {
+        foregroundContext.clearRect(
+            0, 0, lowWidth, lowHeight
+        );
+
+        foregroundContext.drawImage(
+            video,
+            0, 0, lowWidth, lowHeight
+        );
+
+        foregroundContext.globalCompositeOperation =
+            "destination-in";
+
+        foregroundContext.drawImage(maskCanvas, 0, 0);
+
+        foregroundContext.globalCompositeOperation =
+            "source-over";
+
+        ctx.save();
+
+        ctx.beginPath();
+        ctx.rect(rect.x, rect.y, rect.width, rect.height);
+        ctx.clip();
+
+        ctx.imageSmoothingEnabled = true;
+
+        ctx.drawImage(
+            foregroundCanvas,
+            0, 0, lowWidth, lowHeight,
+            0, 0, W, H
+        );
+
+        ctx.restore();
+    }
 }
 
-function stopExport() {
-    exportCancelled = true;
-
-    if (animationId !== null) {
-        cancelAnimationFrame(animationId);
-        animationId = null;
-    }
-
-    if (recorder && recorder.state !== "inactive") {
-        recorder.stop();
-    }
-
-    if (exportStream) {
-        exportStream.getTracks().forEach(track => track.stop());
-        exportStream = null;
-    }
-
-    if (audioContext) {
-        audioContext.close().catch(() => {});
-        audioContext = null;
-        sourceNode = null;
-        audioDestination = null;
-    }
-
-    cancelButton.disabled = true;
-    exportButton.disabled = !video.src;
-}
-
-cancelButton.addEventListener("click", () => {
-    stopExport();
-    setStatus("Export cancelled.");
-});
-
-function getSupportedMimeType() {
+function getMimeType() {
     const types = [
         "video/webm;codecs=vp9,opus",
         "video/webm;codecs=vp8,opus",
         "video/webm"
     ];
 
-    return types.find(type => MediaRecorder.isTypeSupported(type));
+    return types.find(t => MediaRecorder.isTypeSupported(t));
 }
+
+function stopExport() {
+    cancelled = true;
+
+    if (animationFrame !== null) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
+
+    if (recorder && recorder.state !== "inactive") {
+        recorder.stop();
+    }
+
+    if (outputStream) {
+        outputStream.getTracks().forEach(t => t.stop());
+        outputStream = null;
+    }
+
+    $("cancelButton").disabled = true;
+    $("exportButton").disabled = !video.src;
+}
+
+$("cancelButton").onclick = () => {
+    stopExport();
+    status("Export cancelled.");
+};
 
 async function exportVideo() {
     if (!video.src || !bannerImage || !selectionRect) {
-        setStatus("Upload both files and select the banner area first.");
+        status("Upload video, banner and select the signboard first.");
         return;
     }
 
-    if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
-        setStatus("Your browser does not support browser-based video export.");
+    if (!window.MediaRecorder ||
+        !HTMLCanvasElement.prototype.captureStream) {
+        status("Your browser does not support video export.");
         return;
     }
 
-    const start = Number(startInput.value);
-    const end = Number(endInput.value);
+    const start = Number($("startTime").value);
+    const end = Number($("endTime").value);
 
-    if (
-        !Number.isFinite(start) ||
+    if (!Number.isFinite(start) ||
         !Number.isFinite(end) ||
         start < 0 ||
         end > video.duration ||
-        end <= start
-    ) {
-        setStatus("Please enter valid start and end times.");
+        end <= start) {
+        status("Please enter valid trim times.");
         return;
     }
 
-    const mimeType = getSupportedMimeType();
+    const mime = getMimeType();
 
-    if (!mimeType) {
-        setStatus("This browser does not support a compatible WebM export format.");
+    if (!mime) {
+        status("Compatible WebM recording is unavailable.");
         return;
     }
 
-    exportCancelled = false;
-    chunks = [];
+    stopExport();
+    cancelled = false;
+    resetMotion();
 
-    exportButton.disabled = true;
-    cancelButton.disabled = false;
-    downloadLink.style.display = "none";
+    outputChunks = [];
+    $("exportButton").disabled = true;
+    $("cancelButton").disabled = false;
+    $("downloadLink").style.display = "none";
 
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    videoCanvas.width = video.videoWidth;
+    videoCanvas.height = video.videoHeight;
 
-    const ctx = canvas.getContext("2d");
-
-    const canvasStream = canvas.captureStream(30);
-    const tracks = [...canvasStream.getVideoTracks()];
+    const stream = videoCanvas.captureStream(30);
+    const tracks = [...stream.getVideoTracks()];
 
     try {
-        if (typeof video.captureStream === "function") {
-            const originalStream = video.captureStream();
+        let originalStream = null;
 
-            originalStream.getAudioTracks().forEach(track => {
-                tracks.push(track);
-            });
+        if (video.captureStream) {
+            originalStream = video.captureStream();
         } else if (video.mozCaptureStream) {
-            const originalStream = video.mozCaptureStream();
-
-            originalStream.getAudioTracks().forEach(track => {
-                tracks.push(track);
-            });
+            originalStream = video.mozCaptureStream();
         }
-    } catch (error) {
-        console.warn("Audio capture unavailable:", error);
+
+        if (originalStream) {
+            originalStream.getAudioTracks().forEach(t => tracks.push(t));
+        }
+    } catch (e) {
+        console.warn("Audio capture unavailable", e);
     }
 
-    exportStream = new MediaStream(tracks);
+    outputStream = new MediaStream(tracks);
 
     try {
-        recorder = new MediaRecorder(exportStream, {
-            mimeType: mimeType
+        recorder = new MediaRecorder(outputStream, {
+            mimeType: mime
         });
-    } catch (error) {
+    } catch (e) {
         stopExport();
-        setStatus("Could not start video recording in this browser.");
+        status("Could not start the video recorder.");
         return;
     }
 
     recorder.ondataavailable = event => {
         if (event.data && event.data.size > 0) {
-            chunks.push(event.data);
+            outputChunks.push(event.data);
         }
     };
 
     recorder.onstop = () => {
-        if (exportCancelled) {
-            chunks = [];
+        if (cancelled) {
+            outputChunks = [];
+            $("exportButton").disabled = !video.src;
             return;
         }
 
-        const blob = new Blob(chunks, { type: mimeType });
+        const blob = new Blob(outputChunks, {type: mime});
 
-        revokeURL(outputURL);
-        outputURL = URL.createObjectURL(blob);
+        revoke(downloadURL);
+        downloadURL = URL.createObjectURL(blob);
 
-        downloadLink.href = outputURL;
-        downloadLink.style.display = "inline-block";
-        downloadLink.download = "edited-video.webm";
+        $("downloadLink").href = downloadURL;
+        $("downloadLink").download = "banner-replaced-video.webm";
+        $("downloadLink").style.display = "inline-block";
 
-        setStatus("Export complete. Your video is ready to download.");
+        status(
+            "Export complete. Download your edited video."
+        );
 
-        exportStream?.getTracks().forEach(track => track.stop());
-        exportStream = null;
-
-        exportButton.disabled = false;
-        cancelButton.disabled = true;
-
-        if (animationId !== null) {
-            cancelAnimationFrame(animationId);
-            animationId = null;
+        if (outputStream) {
+            outputStream.getTracks().forEach(t => t.stop());
+            outputStream = null;
         }
+
+        $("exportButton").disabled = false;
+        $("cancelButton").disabled = true;
     };
 
     try {
@@ -637,41 +983,41 @@ async function exportVideo() {
         video.currentTime = start;
 
         await new Promise((resolve, reject) => {
-            if (Math.abs(video.currentTime - start) < 0.05) {
+            if (Math.abs(video.currentTime - start) < .05) {
                 resolve();
                 return;
             }
 
-            const onSeeked = () => {
+            const success = () => {
                 cleanup();
                 resolve();
             };
 
-            const onError = () => {
+            const failure = () => {
                 cleanup();
-                reject(new Error("Could not seek to the selected start time."));
+                reject(new Error("Video seeking failed."));
             };
 
             const cleanup = () => {
-                video.removeEventListener("seeked", onSeeked);
-                video.removeEventListener("error", onError);
+                video.removeEventListener("seeked", success);
+                video.removeEventListener("error", failure);
             };
 
-            video.addEventListener("seeked", onSeeked, { once: true });
-            video.addEventListener("error", onError, { once: true });
+            video.addEventListener("seeked", success, {once: true});
+            video.addEventListener("error", failure, {once: true});
         });
 
-        if (exportCancelled) return;
+        if (cancelled) return;
 
-        drawFrame(ctx, canvas);
+        drawEditedFrame(videoContext);
         recorder.start(500);
 
         let ended = false;
 
         function render() {
-            if (exportCancelled || ended) return;
+            if (cancelled || ended) return;
 
-            drawFrame(ctx, canvas);
+            drawEditedFrame(videoContext);
 
             if (video.currentTime >= end || video.ended) {
                 ended = true;
@@ -684,40 +1030,31 @@ async function exportVideo() {
                 return;
             }
 
-            animationId = requestAnimationFrame(render);
+            animationFrame = requestAnimationFrame(render);
         }
-
-        video.addEventListener("ended", () => {
-            if (!ended && !exportCancelled) {
-                ended = true;
-                video.pause();
-
-                if (recorder.state !== "inactive") {
-                    recorder.stop();
-                }
-            }
-        }, { once: true });
 
         await video.play();
         render();
 
-        setStatus("Exporting video. Please keep this tab open.");
+        status(
+            "Exporting. Keep this page open until the video is ready."
+        );
 
-    } catch (error) {
-        console.error(error);
-
+    } catch (e) {
+        console.error(e);
         stopExport();
-        setStatus("Export could not start: " + error.message);
+        status("Export failed: " + e.message);
     }
 }
 
-exportButton.addEventListener("click", exportVideo);
+$("exportButton").onclick = exportVideo;
 
 window.addEventListener("beforeunload", () => {
     stopExport();
-    revokeURL(videoURL);
-    revokeURL(bannerURL);
-    revokeURL(outputURL);
+
+    revoke(videoURL);
+    revoke(bannerURL);
+    revoke(downloadURL);
 });
 </script>
 
