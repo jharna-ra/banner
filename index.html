@@ -1,0 +1,725 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banner Replacement Studio</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #0d1220;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    padding: 24px 15px;
+    text-align: center;
+    background: #171f32;
+    border-bottom: 1px solid #303b52;
+}
+
+header h1 {
+    margin: 0;
+    color: #8db7ff;
+}
+
+header p { color: #aebbd0; }
+
+.container {
+    max-width: 1050px;
+    padding: 20px;
+    margin: auto;
+}
+
+.panel {
+    background: #192338;
+    border: 1px solid #2d3a53;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 18px;
+}
+
+h2 {
+    font-size: 19px;
+    margin-top: 0;
+}
+
+input[type="file"] {
+    display: block;
+    margin-top: 12px;
+    max-width: 100%;
+}
+
+input[type="number"] {
+    width: 95px;
+    padding: 9px;
+    border: 1px solid #42516d;
+    border-radius: 6px;
+    background: #101a2c;
+    color: white;
+}
+
+button {
+    border: 0;
+    padding: 11px 15px;
+    margin: 5px 3px 5px 0;
+    border-radius: 7px;
+    background: #3978e8;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover { background: #2862c8; }
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+small, .help {
+    color: #aebbd0;
+    line-height: 1.6;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 9px;
+}
+
+#stage {
+    position: relative;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+    border-radius: 8px;
+    cursor: crosshair;
+    touch-action: none;
+}
+
+#video {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+#selection {
+    position: absolute;
+    border: 2px dashed #00e5ff;
+    background: rgba(0,229,255,.13);
+    display: none;
+    pointer-events: none;
+}
+
+#previewBanner {
+    position: absolute;
+    display: none;
+    pointer-events: none;
+    object-fit: contain;
+}
+
+#status {
+    color: #8ce6a4;
+    margin-top: 12px;
+    overflow-wrap: anywhere;
+}
+
+#downloadLink {
+    display: none;
+    color: #8db7ff;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    color: #8290a8;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Banner Replacement Studio</h1>
+    <p>Upload • Select • Replace • Export</p>
+</header>
+
+<main class="container">
+
+    <section class="panel">
+        <h2>1. Upload your video</h2>
+        <input type="file" id="videoInput" accept="video/*">
+        <p class="help">Your video stays in your browser. It is not uploaded to a server.</p>
+    </section>
+
+    <section class="panel">
+        <h2>2. Upload your replacement banner</h2>
+        <input type="file" id="bannerInput" accept="image/*">
+        <p class="help">Select the image you want to place over the original signboard.</p>
+    </section>
+
+    <section class="panel">
+        <h2>3. Trim your video</h2>
+        <div class="controls">
+            <label>Start (seconds)
+                <input type="number" id="startTime" min="0" value="0" step="0.1">
+            </label>
+
+            <label>End (seconds)
+                <input type="number" id="endTime" min="0" value="0" step="0.1">
+            </label>
+
+            <button id="setStart">Set start to current time</button>
+            <button id="setEnd">Set end to current time</button>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>4. Select the original banner</h2>
+        <p class="help">
+            Pause the video. Drag your mouse over the existing banner
+            to draw a rectangle around it.
+        </p>
+
+        <div id="stage">
+            <video id="video" controls playsinline></video>
+            <div id="selection"></div>
+            <img id="previewBanner" alt="Replacement banner preview">
+        </div>
+
+        <div class="controls">
+            <button id="clearSelection">Clear selection</button>
+            <button id="showBanner">Show replacement</button>
+            <button id="hideBanner">Hide replacement</button>
+        </div>
+
+        <p class="help">
+            The replacement image is fitted inside the selected rectangle
+            without changing its aspect ratio.
+        </p>
+    </section>
+
+    <section class="panel">
+        <h2>5. Export your edited video</h2>
+        <button id="exportButton" disabled>Export video</button>
+        <button id="cancelButton" disabled>Cancel export</button>
+
+        <p id="status">Upload a video to begin.</p>
+        <a id="downloadLink" download="edited-video.webm">
+            Download edited video
+        </a>
+
+        <p class="help">
+            Export uses WebM where supported by your browser.
+            Original audio is included where the browser supports video
+            audio capture. Keep this tab open while exporting.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    Banner Replacement Studio · Browser-based editing
+</footer>
+
+<script>
+const videoInput = document.getElementById("videoInput");
+const bannerInput = document.getElementById("bannerInput");
+const video = document.getElementById("video");
+const stage = document.getElementById("stage");
+const selection = document.getElementById("selection");
+const previewBanner = document.getElementById("previewBanner");
+const startInput = document.getElementById("startTime");
+const endInput = document.getElementById("endTime");
+const exportButton = document.getElementById("exportButton");
+const cancelButton = document.getElementById("cancelButton");
+const statusText = document.getElementById("status");
+const downloadLink = document.getElementById("downloadLink");
+
+let videoURL = null;
+let bannerURL = null;
+let bannerImage = null;
+let selectionRect = null;
+let dragging = false;
+let dragStart = null;
+let recorder = null;
+let chunks = [];
+let animationId = null;
+let exportCancelled = false;
+let exportStream = null;
+let audioContext = null;
+let sourceNode = null;
+let audioDestination = null;
+let outputURL = null;
+
+function setStatus(message) {
+    statusText.textContent = message;
+}
+
+function revokeURL(url) {
+    if (url) URL.revokeObjectURL(url);
+}
+
+videoInput.addEventListener("change", () => {
+    const file = videoInput.files[0];
+    if (!file) return;
+
+    stopExport();
+    revokeURL(videoURL);
+    revokeURL(outputURL);
+
+    videoURL = URL.createObjectURL(file);
+    video.src = videoURL;
+    video.load();
+
+    selectionRect = null;
+    selection.style.display = "none";
+    previewBanner.style.display = "none";
+    downloadLink.style.display = "none";
+
+    setStatus("Video loaded. Pause and select the banner area.");
+});
+
+video.addEventListener("loadedmetadata", () => {
+    startInput.value = 0;
+    endInput.value = video.duration.toFixed(1);
+    exportButton.disabled = false;
+});
+
+bannerInput.addEventListener("change", () => {
+    const file = bannerInput.files[0];
+    if (!file) return;
+
+    revokeURL(bannerURL);
+    bannerURL = URL.createObjectURL(file);
+
+    const image = new Image();
+
+    image.onload = () => {
+        bannerImage = image;
+        previewBanner.src = bannerURL;
+        previewBanner.style.display = "none";
+        setStatus("Banner loaded. Select a rectangle on the video.");
+    };
+
+    image.onerror = () => {
+        setStatus("Could not load this banner image.");
+    };
+
+    image.src = bannerURL;
+});
+
+document.getElementById("setStart").addEventListener("click", () => {
+    startInput.value = video.currentTime.toFixed(1);
+});
+
+document.getElementById("setEnd").addEventListener("click", () => {
+    endInput.value = video.currentTime.toFixed(1);
+});
+
+function pointerPosition(event) {
+    const rect = stage.getBoundingClientRect();
+
+    return {
+        x: Math.max(0, Math.min(event.clientX - rect.left, rect.width)),
+        y: Math.max(0, Math.min(event.clientY - rect.top, rect.height))
+    };
+}
+
+stage.addEventListener("pointerdown", event => {
+    if (!video.src || video.paused === false) {
+        setStatus("Pause the video before selecting the banner.");
+        return;
+    }
+
+    if (event.target.closest("video") === null &&
+        event.target !== selection &&
+        event.target !== previewBanner) return;
+
+    dragging = true;
+    dragStart = pointerPosition(event);
+
+    selectionRect = {
+        x: dragStart.x,
+        y: dragStart.y,
+        width: 0,
+        height: 0
+    };
+
+    stage.setPointerCapture(event.pointerId);
+    updateSelection();
+});
+
+stage.addEventListener("pointermove", event => {
+    if (!dragging) return;
+
+    const point = pointerPosition(event);
+
+    selectionRect = {
+        x: Math.min(dragStart.x, point.x),
+        y: Math.min(dragStart.y, point.y),
+        width: Math.abs(point.x - dragStart.x),
+        height: Math.abs(point.y - dragStart.y)
+    };
+
+    updateSelection();
+});
+
+function finishSelection() {
+    if (!dragging) return;
+    dragging = false;
+
+    if (!selectionRect ||
+        selectionRect.width < 5 ||
+        selectionRect.height < 5) {
+        selectionRect = null;
+        selection.style.display = "none";
+        setStatus("Selection too small. Draw a larger rectangle.");
+        return;
+    }
+
+    updateSelection();
+    setStatus("Banner area selected.");
+}
+
+stage.addEventListener("pointerup", finishSelection);
+stage.addEventListener("pointercancel", finishSelection);
+
+function updateSelection() {
+    if (!selectionRect) return;
+
+    selection.style.display = "block";
+    selection.style.left = selectionRect.x + "px";
+    selection.style.top = selectionRect.y + "px";
+    selection.style.width = selectionRect.width + "px";
+    selection.style.height = selectionRect.height + "px";
+
+    updateBannerPreview();
+}
+
+function updateBannerPreview() {
+    if (!selectionRect) return;
+
+    previewBanner.style.left = selectionRect.x + "px";
+    previewBanner.style.top = selectionRect.y + "px";
+    previewBanner.style.width = selectionRect.width + "px";
+    previewBanner.style.height = selectionRect.height + "px";
+}
+
+document.getElementById("clearSelection").addEventListener("click", () => {
+    selectionRect = null;
+    selection.style.display = "none";
+    previewBanner.style.display = "none";
+    setStatus("Selection cleared.");
+});
+
+document.getElementById("showBanner").addEventListener("click", () => {
+    if (!bannerImage || !selectionRect) {
+        setStatus("Upload a banner and select a rectangle first.");
+        return;
+    }
+
+    updateBannerPreview();
+    previewBanner.style.display = "block";
+});
+
+document.getElementById("hideBanner").addEventListener("click", () => {
+    previewBanner.style.display = "none";
+});
+
+function drawContainedImage(ctx, image, x, y, width, height) {
+    const scale = Math.min(
+        width / image.naturalWidth,
+        height / image.naturalHeight
+    );
+
+    const drawWidth = image.naturalWidth * scale;
+    const drawHeight = image.naturalHeight * scale;
+
+    const drawX = x + (width - drawWidth) / 2;
+    const drawY = y + (height - drawHeight) / 2;
+
+    ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+}
+
+function drawFrame(ctx, canvas) {
+    const width = video.videoWidth;
+    const height = video.videoHeight;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(video, 0, 0, width, height);
+
+    if (!bannerImage || !selectionRect) return;
+
+    const stageWidth = stage.clientWidth;
+    const stageHeight = stage.clientHeight;
+
+    if (!stageWidth || !stageHeight) return;
+
+    const scaleX = width / stageWidth;
+    const scaleY = height / stageHeight;
+
+    const x = selectionRect.x * scaleX;
+    const y = selectionRect.y * scaleY;
+    const w = selectionRect.width * scaleX;
+    const h = selectionRect.height * scaleY;
+
+    drawContainedImage(ctx, bannerImage, x, y, w, h);
+}
+
+function stopExport() {
+    exportCancelled = true;
+
+    if (animationId !== null) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
+
+    if (recorder && recorder.state !== "inactive") {
+        recorder.stop();
+    }
+
+    if (exportStream) {
+        exportStream.getTracks().forEach(track => track.stop());
+        exportStream = null;
+    }
+
+    if (audioContext) {
+        audioContext.close().catch(() => {});
+        audioContext = null;
+        sourceNode = null;
+        audioDestination = null;
+    }
+
+    cancelButton.disabled = true;
+    exportButton.disabled = !video.src;
+}
+
+cancelButton.addEventListener("click", () => {
+    stopExport();
+    setStatus("Export cancelled.");
+});
+
+function getSupportedMimeType() {
+    const types = [
+        "video/webm;codecs=vp9,opus",
+        "video/webm;codecs=vp8,opus",
+        "video/webm"
+    ];
+
+    return types.find(type => MediaRecorder.isTypeSupported(type));
+}
+
+async function exportVideo() {
+    if (!video.src || !bannerImage || !selectionRect) {
+        setStatus("Upload both files and select the banner area first.");
+        return;
+    }
+
+    if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) {
+        setStatus("Your browser does not support browser-based video export.");
+        return;
+    }
+
+    const start = Number(startInput.value);
+    const end = Number(endInput.value);
+
+    if (
+        !Number.isFinite(start) ||
+        !Number.isFinite(end) ||
+        start < 0 ||
+        end > video.duration ||
+        end <= start
+    ) {
+        setStatus("Please enter valid start and end times.");
+        return;
+    }
+
+    const mimeType = getSupportedMimeType();
+
+    if (!mimeType) {
+        setStatus("This browser does not support a compatible WebM export format.");
+        return;
+    }
+
+    exportCancelled = false;
+    chunks = [];
+
+    exportButton.disabled = true;
+    cancelButton.disabled = false;
+    downloadLink.style.display = "none";
+
+    const canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext("2d");
+
+    const canvasStream = canvas.captureStream(30);
+    const tracks = [...canvasStream.getVideoTracks()];
+
+    try {
+        if (typeof video.captureStream === "function") {
+            const originalStream = video.captureStream();
+
+            originalStream.getAudioTracks().forEach(track => {
+                tracks.push(track);
+            });
+        } else if (video.mozCaptureStream) {
+            const originalStream = video.mozCaptureStream();
+
+            originalStream.getAudioTracks().forEach(track => {
+                tracks.push(track);
+            });
+        }
+    } catch (error) {
+        console.warn("Audio capture unavailable:", error);
+    }
+
+    exportStream = new MediaStream(tracks);
+
+    try {
+        recorder = new MediaRecorder(exportStream, {
+            mimeType: mimeType
+        });
+    } catch (error) {
+        stopExport();
+        setStatus("Could not start video recording in this browser.");
+        return;
+    }
+
+    recorder.ondataavailable = event => {
+        if (event.data && event.data.size > 0) {
+            chunks.push(event.data);
+        }
+    };
+
+    recorder.onstop = () => {
+        if (exportCancelled) {
+            chunks = [];
+            return;
+        }
+
+        const blob = new Blob(chunks, { type: mimeType });
+
+        revokeURL(outputURL);
+        outputURL = URL.createObjectURL(blob);
+
+        downloadLink.href = outputURL;
+        downloadLink.style.display = "inline-block";
+        downloadLink.download = "edited-video.webm";
+
+        setStatus("Export complete. Your video is ready to download.");
+
+        exportStream?.getTracks().forEach(track => track.stop());
+        exportStream = null;
+
+        exportButton.disabled = false;
+        cancelButton.disabled = true;
+
+        if (animationId !== null) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
+        }
+    };
+
+    try {
+        video.pause();
+        video.currentTime = start;
+
+        await new Promise((resolve, reject) => {
+            if (Math.abs(video.currentTime - start) < 0.05) {
+                resolve();
+                return;
+            }
+
+            const onSeeked = () => {
+                cleanup();
+                resolve();
+            };
+
+            const onError = () => {
+                cleanup();
+                reject(new Error("Could not seek to the selected start time."));
+            };
+
+            const cleanup = () => {
+                video.removeEventListener("seeked", onSeeked);
+                video.removeEventListener("error", onError);
+            };
+
+            video.addEventListener("seeked", onSeeked, { once: true });
+            video.addEventListener("error", onError, { once: true });
+        });
+
+        if (exportCancelled) return;
+
+        drawFrame(ctx, canvas);
+        recorder.start(500);
+
+        let ended = false;
+
+        function render() {
+            if (exportCancelled || ended) return;
+
+            drawFrame(ctx, canvas);
+
+            if (video.currentTime >= end || video.ended) {
+                ended = true;
+                video.pause();
+
+                if (recorder.state !== "inactive") {
+                    recorder.stop();
+                }
+
+                return;
+            }
+
+            animationId = requestAnimationFrame(render);
+        }
+
+        video.addEventListener("ended", () => {
+            if (!ended && !exportCancelled) {
+                ended = true;
+                video.pause();
+
+                if (recorder.state !== "inactive") {
+                    recorder.stop();
+                }
+            }
+        }, { once: true });
+
+        await video.play();
+        render();
+
+        setStatus("Exporting video. Please keep this tab open.");
+
+    } catch (error) {
+        console.error(error);
+
+        stopExport();
+        setStatus("Export could not start: " + error.message);
+    }
+}
+
+exportButton.addEventListener("click", exportVideo);
+
+window.addEventListener("beforeunload", () => {
+    stopExport();
+    revokeURL(videoURL);
+    revokeURL(bannerURL);
+    revokeURL(outputURL);
+});
+</script>
+
+</body>
+</html>
